@@ -1,10 +1,42 @@
-import pygame as pg
-import wingbase.colors as colors
-import sys
-import wingbase.ui as ui
-import wingbase.scene as scene
 import prefabs.prefabs as prefabs
+import pygame as pg
+import wingbase.scene as scene
 import random
+
+#왼쪽 위 부터 넘버링
+building_flag = [ [False,[440, 270]], [False,[520,300]] ]
+patrol_points = [ [250,200], [520,70], [670,80], [750,350], [620, 450]]
+building_dict = {
+  'Education Building': [False, [373,416]],
+  'Library': [False, [455,445]],
+  'Hanyang History Building': [False, [446,585]],
+  'Dorm1': [False, [460,230]],
+  'Lion Statue': [False, [460,623]],
+  'Main Building': [False, [400,550]],
+  'IT/BT': [False, [820,360]],
+  'Engineering Building 1': [False, [490,500]],
+  'Engineering Building 2': [False, [580,550]],
+  'HIT': [False, [620,230]],
+  'Nature': [False, [280,410]],
+  'Music': [False, [610,450]],
+  'Music2': [False, [630,410]],
+  'Plaza': [False, [390,600]],
+  'Rotc': [False, [580,500]],
+  'HIT': [False, [620,230]],
+  'Lit': [False, [254,484]],
+  'Metro': [False, [430,648]],
+  'CMG': [False, [520,550]],
+  'Intl': [False, [480,670]],
+  'Edu2': [False, [330,420]],
+  'Theater': [False, [562,609]],
+  'Liv': [False, [575,440]],
+  'Colo': [False, [700,500]]
+}
+def turn_flag(x,y):
+  for i in building_flag:
+    if (abs(i[1][0] - x) < 40 and abs(i[1][1] - y) < 40 )  : 
+      i[0] = True
+      return [True,[i[1][0], i[1][0]]]
 
 class Bar(pg.sprite.Sprite):
   def __init__(self, SCENE, rect, image, edge, overlay, animation, speed, max_val):
@@ -35,20 +67,95 @@ class Bar(pg.sprite.Sprite):
       image_rect.x -= image_rect.width
       self.image.blit(self.animation_images[i],image_rect,special_flags = pg.BLEND_RGBA_MULT)
 
+class Background(pg.sprite.Sprite):
+  def __init__(self, SCENE):
+    pg.sprite.Sprite.__init__(self)
+    self.SCENE = SCENE
+    self.image = pg.image.load('./assets/background_ing.png')
+    self.rect = self.image.get_rect()
+    self.rect.x = 70
+    self.rect.y = -150
+
+class BCGMask(pg.sprite.Sprite):
+  def __init__(self, SCENE, IMAGE, NAME):
+    pg.sprite.Sprite.__init__(self)
+    self.SCENE = SCENE
+    self.image = pg.image.load(IMAGE)
+    self.rect = self.image.get_rect()
+    self.rect.x = 70
+    self.rect.y = -150
+    self.mask = pg.mask.from_surface(self.image)
+    self.name = NAME
+
+class Building(pg.sprite.Sprite):
+  def __init__(self, SCENE, x, y):
+    pg.sprite.Sprite.__init__(self)
+    self.SCENE = SCENE
+    self.image = pg.image.load('./assets/building.png')
+    self.rect = self.image.get_rect()
+    self.rect.x = 70 + x
+    self.rect.y = -150 + y
+
+class Flag(pg.sprite.Sprite):
+  def __init__(self,SCENE,x,y):
+    pg.sprite.Sprite.__init__(self)
+    self.SCENE = SCENE
+    self.image = pg.image.load('./assets/flag.png')
+    self.rect = self.image.get_rect()
+    self.rect.center = [x,y]
+
+#class Coffee(pg.sprite.Sprite)
+
 class Scene_TestStage(scene.Scene):
   def __init__(self, WINDOW, CLOCK, FPS = 30, GROUPS = []):
     super().__init__(WINDOW, CLOCK, FPS=30, GROUPS=[])
+
     self.score = 0
     self.game_font = pg.font.Font('./assets/NotoSans-BoldItalic.ttf',24)
+    self.edgemask = BCGMask(self,'./assets/edgemask.png', 'Edge')
+    self.group_bcgmask = pg.sprite.Group()
+    self.group_bcgmask.add(self.edgemask)
+    self.group_buildings = pg.sprite.Group()
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_edu.png','Education Building'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_library.png','Library'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_historic.png','Hanyang History Building'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_dorm1.png','Dorm1'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_lion.png','Lion Statue'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_mainbdg.png','Main Building'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_itbt.png','IT/BT'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_engi1.png','Engineering Building 1'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_engi2.png','Engineering Building 2'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_business.png','HIT'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_nature.png','Nature'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_paiknammusic.png','Music'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_music2.png','Music2'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_plaza.png','Plaza'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_rotc.png','Rotc'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_lit.png','Lit'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_metrogate.png','Metro'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_chungmongkoo.png','CMG'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_intl.png','Intl'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_edu2.png','Edu2'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_theater.png','Theater'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_livsci.png','Liv'))
+    self.group_buildings.add(BCGMask(self,'./assets/bcg_colosseum.png','Colo'))
     self.group_enemy = pg.sprite.Group() # 적 그룹!
     self.group_enemybullets = pg.sprite.Group() # 적 총알 그룹!
     self.group_playerbullets = pg.sprite.Group() # 총알 그룹!
     self.group_player = pg.sprite.Group()
     self.group_overlay = pg.sprite.Group()
+    self.background = Background(self)
+    self.group_background = pg.sprite.Group()
+    self.group_background.add(self.background)
+    self.group_flag = pg.sprite.Group()
+    self.groups.append(self.group_buildings)
+    self.groups.append(self.group_bcgmask)
+    self.groups.append(self.group_background)
     self.groups.append(self.group_enemy)
     self.groups.append(self.group_enemybullets)
     self.groups.append(self.group_playerbullets)
     self.groups.append(self.group_player)
+    self.groups.append(self.group_flag)
     self.groups.append(self.group_overlay)
     self.player = prefabs.Player(self,180,240)
     bar_image = pg.image.load('./assets/bar.png')
@@ -76,8 +183,19 @@ class Scene_TestStage(scene.Scene):
     self.finish_timer = pg.time.get_ticks()
     self.death_time = -1
     self.spawn_enemy()
+
+    pg.mixer.music.load('./assets/sound/HYU_schoolsong_mr_16bit.wav')
+    pg.mixer.music.play(-1)
+
   def spawn_enemy(self):
-    self.group_enemy.add(prefabs.Enemy(self,random.randint(0,self.WINDOW.get_size()[0]),self.WINDOW.get_size()[1],self.player))
+    char_selector = random.randint(0,1)
+    pos = [0,0]
+    if char_selector == 0:
+      pos = [505, 500]
+    elif char_selector == 1:
+      pos = [790,130]
+    self.group_enemy.add(prefabs.Enemy(self,pos[0],
+      pos[1],self.player,patrol_points[random.randint(0,4)],0))
   def loop(self):
     self.bar_health.update_value(1000-self.player.health)
     self.bar_time.update_value(pg.time.get_ticks()-self.finish_timer)
@@ -85,11 +203,15 @@ class Scene_TestStage(scene.Scene):
     if pg.time.get_ticks() - self.enemy_timer > 20000:
       self.enemy_timer = pg.time.get_ticks()
       self.spawn_enemy()
-    collision = pg.sprite.groupcollide(self.group_player,self.group_enemybullets,False,True)
+    collision = pg.sprite.groupcollide(self.group_player,self.group_buildings,False,False,pg.sprite.collide_mask)
     for player in collision:
-      for bullet in collision[player]:
-        bullet.destroy()
-        self.player.hit(10)
+      for building in collision[player]:
+        index = building_dict[building.name]
+        if index[0] == False:
+          index[0] = True
+          flag = Flag(self, index[1][0] + 85, index[1][1] - 180)
+          self.group_flag.add(flag)
+          self.groups.append(self.group_flag)
     collision = pg.sprite.groupcollide(self.group_enemy,self.group_playerbullets,False,True)
     for enemy in collision:
       for bullet in collision[enemy]:
@@ -99,7 +221,7 @@ class Scene_TestStage(scene.Scene):
     for player in collision:
       for enemy in collision[player]:
         enemy.destroy()
-        self.player.hit(50)
+        self.player.hit(200)
     collision = pg.sprite.groupcollide(self.group_enemybullets,self.group_playerbullets,True,True)
     for bullet in collision:
       for enemybullet in collision[bullet]:
@@ -116,11 +238,12 @@ class Scene_TestStage(scene.Scene):
 if __name__ == "__main__":
   pg.init()
   pg.font.init()
-  SCREEN = (360, 480)
+  SCREEN = (1080, 720)
   WINDOW = pg.display.set_mode(SCREEN)
   FPS = 60
   CLOCK = pg.time.Clock()
   SCENE = Scene_TestStage(WINDOW, CLOCK, 60, [])
+
   while True:
     SCENE.loop_begin()
     SCENE.loop()

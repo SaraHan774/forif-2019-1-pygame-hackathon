@@ -11,18 +11,13 @@ class Scene_Intro(scene.Scene):
     self.groups.append(self.group_button)
     self.story = []
     self.story_index = 0
-    self.story.append(ui.Button(180,240,'./assets/story0.png',self.next_story))
-    self.story.append(ui.Button(180,240,'./assets/story1.png',self.next_story))
-    self.story.append(ui.Button(180,240,'./assets/story2.png',self.next_story))
-    self.story.append(ui.Button(180,240,'./assets/story3.png',self.next_story))
-    self.story.append(ui.Button(180,240,'./assets/story4.png',self.next_story))
-    self.story.append(ui.Button(180,240,'./assets/story5.png',self.next_story))
+    self.story.append(ui.Button(540,360,'./assets/story0.png',self.next_story))
     self.group_button.add(self.story[0])
     self.to_next_stage = False
   def next_story(self, arg):
     self.story_index += 1
     self.group_button.empty()
-    if self.story_index == 6:
+    if self.story_index == 1:
       self.to_next_stage = True
       return
     self.group_button.add(self.story[self.story_index])
@@ -38,7 +33,7 @@ class Scene_Intro(scene.Scene):
 
 if __name__ == "__main__":
   pg.init()
-  SCREEN = (360, 480)
+  SCREEN = (960, 720)
   WINDOW = pg.display.set_mode(SCREEN)
   FPS = 60
   CLOCK = pg.time.Clock()
