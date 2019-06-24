@@ -11,7 +11,7 @@ The rule of this game is simple. The player is a senior who wants to graduate HY
 #### 2. Player has to avoid collision with professors and some bothersome evangelists on the campus. 
 Don't mean to offend some Christians here, but Korea really do have some bothersome evangelists on the campus actually. They talk to random students and force them to listen to their thought about Jesus (and suggest every student to go to church). The player's Health Point will decrease whenever the player collides with the professor and evangelists! The program generates more "enemies" whenever the player comes near the enemies. As a result, rule number 1, "plant a flag on the buildings" becomes harder to achieve.
 ##### 2-1. If the player fails to clear this stage, the player will be on academic probation!
-#### 3. [Stage 2] This is not the end - THE BOSS STAGE awaits.
+#### 3. This is not the end - THE BOSS STAGE awaits.
 After the player has successfully planted 7 flags on the buildings, the player also has to clear "the boss stage"(every game has it, don't they?). The boss - which will be a professor who throws grade "C", "D", and "F" - will be throwing terrible grades at you. you have to avoid getting hit by the grades, and hit the professor with a dissertation. After the player overcome this stage, finally, GRADUATION ! 
 
 ## Screen shots from the game
