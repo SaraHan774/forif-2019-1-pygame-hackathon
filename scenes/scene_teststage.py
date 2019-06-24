@@ -221,7 +221,7 @@ class Scene_TestStage(scene.Scene):
     for player in collision:
       for enemy in collision[player]:
         enemy.destroy()
-        self.player.hit(50)
+        self.player.hit(200)
     collision = pg.sprite.groupcollide(self.group_enemybullets,self.group_playerbullets,True,True)
     for bullet in collision:
       for enemybullet in collision[bullet]:
